@@ -1,0 +1,73 @@
+# Манифест дека
+
+Манифест — YAML с контентом: название дека и список слайдов. Каждый слайд —
+архетип и его поля. Геометрия, шрифты, цвета и хром берутся из стиля,
+в манифест их не пишут. Рабочий пример — `examples/example.yaml`.
+
+Картинки: `https://…`, путь от файла манифеста (`media/plan.jpg`),
+абсолютный путь или `assets/…` (из репо скилла). Скругление и подгонку
+сборщик делает сам.
+
+```yaml
+title: Название дека        # имя файла в Google Презентациях
+share: [someone@radugadesign.com]   # необязательно: кому дать доступ на редактирование
+slides:
+- archetype: cover
+  …
+```
+
+## Архетипы
+
+**cover** — обложка. `bg` (фон, из `assets/covers/…` или свой размытый),
+`logo` (`assets/logos/rd_logo_white.png`), `title` (короткое имя проекта),
+`subtitle` (пояснение, встанет внизу серым), `footer_pills` (`[дата, radugadesign.com]`).
+
+**outro** — финал. `bg` (тот же, что на обложке), `logo`
+(`assets/logos/rd_logo_black.png`), `title` («be raduga.\nthink design.»),
+`contacts` (`[radugadesign.com, hello@radugadesign.com]`).
+
+**section_divider** — разделитель раздела. `title`, `bg` (необязательно),
+`mark` (необязательно, маленький знак в углу).
+
+**statement** — одна сильная фраза крупно. `text`.
+
+**text_block** — заголовок и абзац, справа картинка. `title`, `body`,
+`image` (необязательно), `caption` (подпись под картинкой), `body_w`
+(ширина текста, если нужно).
+
+**stages** — задача и 3–4 пункта с номерами. `title`, `intro`,
+`stages: [{label, body}]`.
+
+**card_row** — 3–4 карточки в ряд: картинка, подпись, текст. `title`,
+`cards: [{label, image, body}]`.
+
+**setup** — вариант решения целиком на одном слайде. `name` (станет «● name»),
+`sketch` (эскиз-якорь), `body`, `refs` (референсы, до 3–4),
+`layout: row` (принудительно ровный ряд), `seed` (другая раскладка).
+
+**moodboard** — подборка картинок. `name`, `descriptor` (заголовок
+«name ● descriptor») или `title`, `images`, `caption`,
+`layout: rows` (ровные ряды).
+
+**case_hero** — разворот кейса на полноэкранном фоне. `name`,
+`descriptor`, `bg`, `pills` / `meta_pills`, `right_meta`.
+
+**case_study** — кейс: текст и кластер картинок. `name`, `body`, `images`.
+
+**spec** — карточка решения: миниатюра слева и блоки текста. `title`,
+`image`, `labels` (заголовки блоков, по умолчанию «Идея / Механика /
+Контент»), `idea`, `mechanics`, `content`, `size` (сноска).
+
+**pipeline** — таймлайн или процесс шагами. `title`,
+`steps: [{label, body, tools}]`.
+
+**venn** — пересечение 2–3 понятий. `title`, `circles: [{label, body, tools}]`.
+
+**storyboard** — раскадровка блока. `name`,
+`blocks: [[лейбл, текст], …]`, `frames: [{image, caption}]`, `aspect`.
+
+**wide_image** — одна широкая картинка во всю ширину и подпись.
+`title`, `image`, `body`.
+
+Старые имена `clean_content` и `options_row` работают как `card_row` и
+`stages`.

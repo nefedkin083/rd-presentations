@@ -1,0 +1,18 @@
+name: ci
+on:
+  pull_request:
+  push:
+    branches: [main]
+jobs:
+  lint-and-smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -r requirements.txt pytest pyflakes
+      - name: lint
+        run: pyflakes rdp scripts tests
+      - name: smoke (build plan from the example, no Google keys)
+        run: python -m pytest -q tests

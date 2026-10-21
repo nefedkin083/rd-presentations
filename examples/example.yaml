@@ -1,0 +1,95 @@
+# Пример манифеста. Контент нейтральный, картинки — синтетические заглушки.
+# Пути к картинкам — относительно этого файла; assets/… — относительно репо.
+title: RD — пример презентации
+slides:
+- archetype: cover
+  bg: assets/covers/02-blue/02-blue-15.jpg
+  logo: assets/logos/rd_logo_white.png
+  title: Световой павильон
+  subtitle: Концепция мультимедийного пространства ● пример для скилла
+  footer_pills:
+  - 21.10.26
+  - radugadesign.com
+
+- archetype: statement
+  text: 'Павильон работает как инструмент: днём это открытая площадь, вечером — экран, который видно с другого берега.'
+
+- archetype: text_block
+  title: Место
+  image: media/port.jpg
+  caption: Ситуационная схема.
+  body: |-
+    Площадка у воды, открытая со всех сторон. Основной поток идёт вдоль набережной вечером.
+    Высота навеса около 9 метров, конструкция выдерживает подвес экранов и света.
+
+- archetype: stages
+  title: Задача
+  intro: Сделать объект, который узнают издалека, и собрать язык, который можно повторить на других площадках.
+  stages:
+  - label: Видимость
+    body: Читается с расстояния 300 метров и в движении.
+  - label: Монтаж
+    body: Собирается за две ночи без спецтехники.
+  - label: Контент
+    body: Один сценарий на день и вечер, без ручного управления.
+
+- archetype: setup
+  name: вариант А
+  sketch: media/wide.jpg
+  body: Световая лента идёт по периметру навеса и собирает поток людей к центру. Вечером лента становится экраном, днём остаётся графичной линией.
+  refs:
+  - media/land.jpg
+  - media/square.jpg
+  - media/port2.jpg
+
+- archetype: card_row
+  title: Ключевые элементы
+  cards:
+  - label: Лента
+    image: media/land2.jpg
+    body: Матовый рассеиватель, свет без точек.
+  - label: Экран
+    image: media/square.jpg
+    body: Шаг пикселя под дистанцию просмотра.
+  - label: Звук
+    image: media/port.jpg
+    body: Направленные колонки по краю навеса.
+
+- archetype: moodboard
+  name: Б
+  descriptor: визуальный тон
+  images:
+  - media/pano.jpg
+  - media/tall.jpg
+  - media/land.jpg
+  - media/square.jpg
+
+- archetype: pipeline
+  title: Таймлайн
+  steps:
+  - label: неделя 1
+    body: Превиз и карта света.
+  - label: неделя 2
+    body: Концепты на модели.
+  - label: неделя 3
+    body: Тест на площадке.
+  - label: неделя 4
+    body: Производство и запуск.
+
+- archetype: spec
+  title: Вариант А ● механика
+  image: media/wide.jpg
+  labels: [Идея, Механика, Сценарий]
+  idea: Свет ведёт человека по периметру к центру площади.
+  mechanics: Лента на подвесах, управление по таймлайну.
+  content: Медленное дыхание света вечером, графика днём.
+
+- archetype: outro
+  bg: assets/covers/02-blue/02-blue-15.jpg
+  logo: assets/logos/rd_logo_black.png
+  title: |-
+    be raduga.
+    think design.
+  contacts:
+  - radugadesign.com
+  - hello@radugadesign.com

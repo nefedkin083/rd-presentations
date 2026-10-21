@@ -1,0 +1,203 @@
+# Deck DNA — машиночитаемый спек вёрстки презентаций RD.
+# Единый источник правды: из него (1) рендерится страница-методичка и
+# (2) агент-сборщик собирает новые деки из сырого контента.
+#
+# Числа извлечены из ДИЗАЙНЕРСКОГО ШАБЛОНА (reference/designers_template.pdf,
+# 22 слайда, канон RD). Прежний эталон — VTB-дек — был единичной ручной сборкой;
+# шаблон приоритетнее. Извлечение: PDF 1920×1080pt → холст 10×5.625in
+# (U = 192pt/in; размер шрифта real_pt = pdf_pt × 0.375).
+# Единицы: дюймы для читаемости + EMU (Google Slides native). 1in = 914400 EMU.
+#
+# Шрифт шаблона — Pragmatica Next; в Google Slides её нет, поэтому рендерим
+# Inter (гео-гротеск, дизайн-система RD = Inter везде). Все числа/цвета — из шаблона.
+
+meta:
+  version: 2
+  updated: 2026-07-10
+  reference_deck: "RD designers template (canonical)"
+  reference_pdf: "reference/designers_template.pdf"
+  legacy_reference: "VTB app video proposal — единичная ручная сборка, не канон"
+  platform: google-slides
+
+canvas:
+  ratio: "16:9"
+  width_emu: 9144000
+  height_emu: 5143500
+  width_in: 10.0
+  height_in: 5.625
+  background: "#212121"    # тёмный фон контент-слайдов (владелец меняет сам)
+
+# Опорная левая линия — от неё стартует весь контент слайда.
+grid:
+  left_margin_in: 0.214
+  left_margin_emu: 195700
+  # 4-колоночная сетка карточек/этапов (card_row, stages).
+  card_cols: 4
+  card_width_in: 2.24
+  card_gutter_in: 0.214
+  card_x_in: [0.213, 2.660, 5.107, 7.550]
+  # правая текст-колонка кейс-слайдов
+  case_body_x_in: 6.730
+  case_body_w_in: 3.05
+
+# Постоянный хром — есть на каждом контент-слайде.
+chrome:
+  title:
+    font: "Inter"
+    weight: medium          # 500
+    size_pt: 20.2
+    color: "#ffffff"
+    line_height_in: 0.313   # межстрочный шаг многострочного заголовка
+    box_in: { x: 0.214, y: 0.160, w: 7.3, h: 0.5 }
+    align: top-left
+  page_number:
+    font: "Inter"
+    size_pt: 8.2
+    color: "#222222"        # тёмная цифра в белом кружке
+    marker: white-circle
+    circle_diameter_in: 0.30
+    center_in: { x: 5.0, y: 5.29 }
+  copyright:
+    font: "Inter"
+    weight: light           # 300
+    size_pt: 4.9
+    color: "#ffffff"
+    text: "© Copyright 2026 radugadesign All rights reserved. All original content part of this document may not, in any case, be used, reproduced..."
+    orientation: vertical   # читается сверху вниз
+    anchor_in: { x: 9.970, y: 0.097 }   # правый край, верх
+
+type_scale:
+  title:        { font: "Inter", weight: medium,  size_pt: 20.2, color: "#ffffff" }  # заголовок + statement
+  body:         { font: "Inter", weight: regular, size_pt: 11.2, color: "#e7e7e7", line_height_in: 0.208 }
+  label:        { font: "Inter", weight: medium,  size_pt: 11.2, color: "#ffffff" }  # подзаголовок карточки
+  small:        { font: "Inter", weight: regular, size_pt: 8.2,  color: "#ffffff" }  # подписи pipeline/мета
+  chip:         { font: "Inter", weight: regular, size_pt: 11.2, color: "#222222" }  # текст в светлой пилюле
+  copyright:    { font: "Inter", weight: light,   size_pt: 4.9,  color: "#ffffff" }
+  cover_footer: { font: "Inter", weight: regular, size_pt: 11.2, color: "#222222" }  # в светлых пилюлях
+
+colors:
+  title: "#ffffff"
+  body: "#e7e7e7"         # тело слайда — мягкий светло-серый (не чистый белый)
+  label: "#ffffff"
+  secondary: "#9a9a9a"      # приглушённый descriptor после ● в хедере (в шаблоне — alpha на белом)
+  accent: "#ffffff"
+  chip_text: "#222222"      # текст на светлой пилюле
+  chip_fill: "#ffffff"      # заливка светлой пилюли
+  copyright: "#5a5a5a"      # приглушённый серый — юр-строка уходит на задний план
+  page_number: "#222222"
+  background: "#212121"
+  diagram_accent: "#00f9ff"   # циан-линия/узлы pipeline + обводка кругов venn (сэмпл из шаблона)
+  diagram_pill_fill: "#4d4d4d" # тёмно-серая пилюля 'N step' в диаграммах
+  diagram_pill_text: "#d6d6d6" # текст в тёмной пилюле диаграммы
+
+# Компоненты-примитивы шаблона.
+components:
+  dot:                      # ● круглый маркер-разделитель в заголовках/хедерах
+    glyph: "●"
+    size_pt_header: 15      # рендер-кегль для Inter ● в хедере (сырой extract 33.8pt —
+                            # у ZapfDingbats глиф мелкий в em, у Inter ● заполняет em, поэтому меньше)
+    size_pt_inline: 11.2    # мелкий инлайн (pipeline-чипы, running-header)
+    color: "#ffffff"
+  pill_solid:               # светлая пилюля с тёмным текстом (Learn more / Video)
+    fill: "#ffffff"
+    text_color: "#222222"
+    size_pt: 11.2
+    radius_in: 0.11
+  pill_outline:             # обводная пилюля с белым текстом (Moscow, Russia / 2024)
+    fill: none
+    outline: "#ffffff"
+    text_color: "#ffffff"
+    size_pt: 11.2
+    radius_in: 0.11
+  numbered_dingbat:         # ➊➋➌➍ нумерация карточек/этапов
+    color: "#ffffff"
+    size_pt: 11.2
+
+media:
+  corner_radius_in: 0.109
+  corner_radius_emu: 100000
+  bake_rounding: true       # скругление запекается в файл (Slides API crop-to-shape не умеет)
+  full_bleed_exempt: true   # фоны во всю ширину не скругляем
+  video_rounding: false     # mp4 скруглить нельзя — прямые углы либо гифка
+
+# Архетипы слайдов (по дизайнерскому шаблону, страница-источник в скобках).
+slide_archetypes:
+  cover:                    # p01
+    chrome: false
+    desc: "Full-bleed фон, заголовок top-left, футер-пилюли (дата, домен) снизу, логотип."
+    elements: [full_bleed_bg, title, footer_pills, logo]
+  section_divider:          # p02
+    chrome: partial
+    desc: "Раздел: заголовок top-left поверх full-bleed фона, номер страницы, © марка."
+    elements: [full_bleed_bg, title, page_number]
+  card_row:                 # p03
+    desc: "4 карточки в ряд (варьируемая высота ~1.53in), под каждой ➊ + подзаголовок + тело."
+    layout:
+      cards: { count: 4, width_in: 2.24, x_in: [0.213, 2.660, 5.107, 7.550], img_y_in: 0.59, img_h_in: 1.53 }
+      label: { y_in: 2.45, style: label, dingbat: true }
+      body:  { y_in: 3.19, style: body }
+  statement:                # p04
+    desc: "Крупное многострочное утверждение заголовочным кеглем, без картинок."
+    layout:
+      text: { x_in: 0.214, y_in: 0.160, style: title, line_height_in: 0.313 }
+  case_hero:                # p10-12
+    chrome: partial
+    desc: "Кейс-обложка: 'NAME ● descriptor' заголовок, пилюли (Learn more/Video), мета-теги, right-мета блок, full-bleed фон."
+    layout:
+      title: { dot: after-name, style: title }
+      pills: { y_in: 1.241, solid: [Learn more, Video], outline: [meta1, meta2] }
+      right_meta: { x_in: 5.951, y_in: 0.280, style: body }
+  case_study:               # p13-17
+    desc: "Кейс-разбор: running-хедер '● NAME' top-left, кластер картинок слева (1-3 шт, может уходить за край), тело-колонка справа (x6.730)."
+    layout:
+      header: { dot: before-name, style: title }
+      images: { arrangement: left-cluster, count: 1-3, may_bleed: true }
+      body:   { x_in: 6.730, y_in: 2.774, style: body }
+  stages:                   # p18
+    desc: "N нумерованных этапов в ряд: ➊ + заголовок + тело, без картинок (card_row без изображений)."
+    layout:
+      cols: { count: 4, x_in: [0.213, 2.660, 5.107, 7.550] }
+      title: { y_in: 1.53, style: label, dingbat: true }
+      body:  { y_in: 2.565, style: body }
+  moodboard:                # p19-21
+    desc: "'Мудборд ● конструктив' хедер, россыпь скруглённых плиток с осознанными наложениями (Elementor-хаос, НЕ сетка)."
+    layout:
+      title: { dot: after-name, style: title }
+      tiles: { arrangement: overlapping-scatter, rounded: true, mix: [photo, gif] }
+  outro:                    # p22
+    chrome: false
+    desc: "Финал: 'Be raduga. / Think design' заголовочным кеглем top-left, футер-контакты в пилюлях, full-bleed фон."
+    elements: [full_bleed_bg, title, footer_pills]
+
+# Диаграммы (геометрия снята из шаблона p06/p07, реализованы в сборщике).
+diagrams:
+  line_y_in: 2.805          # общая циан-ось для обеих диаграмм (центр)
+  line_thick_in: 0.020
+  node_size_in: 0.072       # сторона циан-квадрата на оси
+  x_start_in: 0.239         # левый край оси / первый узел
+  x_end_in: 9.747           # правый терминальный узел
+  pill:                     # тёмная пилюля 'N step'
+    fill_key: diagram_pill_fill
+    text_key: diagram_pill_text
+    size_pt: 11.2
+  pipeline:                 # p06
+    desc: "Горизонтальный таймлайн N шагов: узел на оси, пилюля 'K step' над осью, тело + '● tool' чипы под осью."
+    pill_y_in: 2.44         # пилюля над осью
+    body_y_in: 3.02         # тело под осью
+    tool_color_key: secondary
+  venn:                     # p07
+    desc: "3 пересекающихся круга-обводки на оси, пилюля 'N step' в верхней части круга, тело по центру снизу."
+    diameter_in: 3.05
+    centers_x_in: [2.55, 5.0, 7.45]
+    pill_dy_in: -0.99       # пилюля относительно центра круга (вверх)
+    body_dy_in: 0.48        # тело относительно центра круга (вниз)
+    tool_color_key: secondary
+
+# Грамматика плиток мудборда — принцип, не жёсткая сетка.
+tile_grammar:
+  principle: "Живая раскладка с осознанными наложениями краёв, как в Elementor; не выравнивать в аккуратную сетку."
+  hard_rules:
+    - "Все плитки со скруглением ~0.109in, запечённым в файл."
+    - "Новое медиа не должно заходить на существующий текст (заголовок, подпись) и не перекрывать другие плитки без умысла."
+    - "Гифки не перекруглять повторно (replaceImage статикой замораживает анимацию)."
+    - "Проверять углы на увеличенном кропе, не на full-slide рендере."
