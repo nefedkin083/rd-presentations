@@ -40,7 +40,8 @@ def substitute(requests, media_map):
             if key not in media_map:
                 missing.add(key)
                 return url
-            return drive_image_url(media_map[key])
+            v = media_map[key]
+            return v if str(v).startswith("http") else drive_image_url(v)
         return url
 
     out = []
@@ -62,6 +63,9 @@ def finalize(plan_dir, media_map_path=None):
     else:
         media_map = _load(plan_dir, "media_map.json")
     reqs = substitute(_load(plan_dir, "requests.json"), media_map)
+    for old in os.listdir(plan_dir):
+        if old.startswith("batch_") and old.endswith(".json"):
+            os.remove(os.path.join(plan_dir, old))
     paths = []
     for n, i in enumerate(range(0, len(reqs), BATCH), 1):
         p = os.path.join(plan_dir, f"batch_{n:02d}.json")
@@ -115,6 +119,9 @@ def direct(plan_dir, token_path, share=()):
         time.sleep(0.3)
     S.presentations().batchUpdate(presentationId=pid, body={"requests": [
         {"deleteObject": {"objectId": default_slide}}]}).execute()
+    # Slides keeps its own copy of every inserted picture, so the public
+    # media files are no longer needed: drop the folder (no public leftovers)
+    D.files().update(fileId=folder, body={"trashed": True}).execute()
     for email in list(share) + list(plan.get("share", [])):
         D.permissions().create(fileId=pid, sendNotificationEmail=False,
                                body={"type": "user", "role": "writer", "emailAddress": email}).execute()

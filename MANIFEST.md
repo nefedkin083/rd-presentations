@@ -24,7 +24,7 @@ slides:
 
 **outro** — финал. `bg` (тот же, что на обложке), `logo`
 (`assets/logos/rd_logo_black.png`), `title` («be raduga.\nthink design.»),
-`contacts` (`[radugadesign.com, hello@radugadesign.com]`).
+`contacts` (`[radugadesign.com, hello@radugadesign.com]`; старое имя поля — `footer_pills`).
 
 **section_divider** — разделитель раздела. `title`, `bg` (необязательно),
 `mark` (необязательно, маленький знак в углу).
@@ -36,13 +36,13 @@ slides:
 (ширина текста, если нужно).
 
 **stages** — задача и 3–4 пункта с номерами. `title`, `intro`,
-`stages: [{label, body}]`.
+`stages: [{label, body}]` — до 4 пунктов, лишние не выводятся.
 
 **card_row** — 3–4 карточки в ряд: картинка, подпись, текст. `title`,
-`cards: [{label, image, body}]`.
+`cards: [{label, image, body}]` — до 4 карточек, лишние не выводятся.
 
 **setup** — вариант решения целиком на одном слайде. `name` (станет «● name»),
-`sketch` (эскиз-якорь), `body`, `refs` (референсы, до 3–4),
+`sketch` (эскиз-якорь), `body`, `refs` (референсы; эскиз + рефы — не больше 4, иначе сборка остановится с ошибкой — так держится воздух),
 `layout: row` (принудительно ровный ряд), `seed` (другая раскладка).
 
 **moodboard** — подборка картинок. `name`, `descriptor` (заголовок
@@ -55,19 +55,22 @@ slides:
 **case_study** — кейс: текст и кластер картинок. `name`, `body`, `images`.
 
 **spec** — карточка решения: миниатюра слева и блоки текста. `title`,
-`image`, `labels` (заголовки блоков, по умолчанию «Идея / Механика /
-Контент»), `idea`, `mechanics`, `content`, `size` (сноска).
+`image`, `labels` (три заголовка блоков, по умолчанию «Идея / Механика /
+Контент»; недостающие берутся из умолчаний), `idea`, `mechanics`, `content`, `size` (сноска).
 
 **pipeline** — таймлайн или процесс шагами. `title`,
 `steps: [{label, body, tools}]`.
 
-**venn** — пересечение 2–3 понятий. `title`, `circles: [{label, body, tools}]`.
+**venn** — пересечение 2–3 понятий. `title`, `circles: [{label, body, tools}]` — 2 или 3 круга.
 
-**storyboard** — раскадровка блока. `name`,
-`blocks: [[лейбл, текст], …]`, `frames: [{image, caption}]`, `aspect`.
+**storyboard** — раскадровка блока. `name`, `time` (необязательно, встанет
+в заголовок через «●»), `blocks: [[лейбл, текст], …]`, `frames: [{image, caption}]`,
+`aspect` (пропорция экрана, по умолчанию 6:1). Исключение из правила аспекта:
+кадры подрезаются под пропорцию экрана — это намеренно, кадр показывает экран.
 
 **wide_image** — одна широкая картинка во всю ширину и подпись.
-`title`, `image`, `body`.
+`title`, `image`, `body`. Исключение из правила скругления: широкая схема
+или график ставится без скругления углов.
 
 Старые имена `clean_content` и `options_row` работают как `card_row` и
 `stages`.

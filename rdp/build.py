@@ -281,7 +281,7 @@ def build_cover(b, s):
     add_title(b, p, s["title"])
     if s.get("subtitle"):
         # подпись-пояснение (что это за документ) — всегда внизу над датой,
-        # мельче и серым; так NIO правит обложки руками («Котлин», Черноголовка, «Циркадные сны»)
+        # мельче и серым — так обложки правят руками в студии
         b.textbox(p, s["subtitle"], 0.214, 4.55, 7.3, 0.46,
                   11.2, "#999999", weight=400)
     footer = s.get("footer_pills", [])
@@ -541,7 +541,7 @@ def build_moodboard(b, s, page_no):
         H = 3.05 if caption else 4.0
         aspects = [_img_aspect(u) for u in imgs]
         if s.get("layout") == "rows":
-            # ровные ряды одинаковой высоты (вкус NIO, deptrans/Динамика)
+            # ровные ряды одинаковой высоты
             # до 4 плиток — один ряд, больше — два ряда поровну
             n = len(imgs)
             split = [list(range(n))] if n <= 4 else [list(range((n + 1) // 2)),
@@ -629,6 +629,10 @@ def build_venn(b, s, page_no):
     x0, x1 = D["x_start_in"], D["x_end_in"]
     d, centers = V["diameter_in"], V["centers_x_in"]
     circles = s["circles"]
+    if len(circles) == 2:          # two circles: centre the pair on the axis
+        mid = (x0 + x1) / 2
+        gap = (centers[1] - centers[0]) / 2
+        centers = [mid - gap, mid + gap]
     b.rect(p, x0, line_y - t / 2, x1 - x0, t, cyan)
     b.rect(p, x0 - ns / 2, line_y - ns / 2, ns, ns, cyan)
     b.rect(p, x1 - ns / 2, line_y - ns / 2, ns, ns, cyan)
@@ -650,8 +654,7 @@ def build_spec(b, s, page_no):
     """Per-installation detail slide: title + small left thumbnail (baked rounded)
     + wide column of labelled blocks (Idea / Mechanics / Content) at 11pt, plus a
     muted size footnote. Blocks sit on a fixed 3-slot grid so bodies stay short.
-    Proportions set by NIO on the SCFHS deck: the image is a reference thumb, the
-    text carries the slide."""
+    The image is a reference thumb; the text carries the slide."""
     p = b.slide()
     b.set_bg(p, BG_DARK)
     add_copyright(b, p)
@@ -663,7 +666,7 @@ def build_spec(b, s, page_no):
         tx, tw = 2.831, 4.90
     else:
         tx, tw = 0.214, 9.3
-    labels = s.get("labels", ["Идея", "Механика", "Контент"])
+    labels = (list(s.get("labels", [])) + ["Идея", "Механика", "Контент"][len(s.get("labels", [])):])[:3]
     blocks = [(labels[0], s.get("idea", "")), (labels[1], s.get("mechanics", "")),
               (labels[2], s.get("content", ""))]
     ys = [1.12, 2.42, 3.72]
@@ -727,11 +730,11 @@ def build_storyboard(b, s, page_no):
     """Раскадровка блока для сверхширокого экрана: слева колонка лейблов
     (музыка / экран / материал), справа столбик кадров в пропорции экрана
     с подписью под каждым. Пропорция кадра берётся из манифеста (`aspect`,
-    по умолчанию 6:1 — LED 15×2,5 м, «Грохот эпох», 14.10.2026)."""
+    по умолчанию 6:1 — например, LED 15×2,5 м)."""
     p = b.slide()
     b.set_bg(p, BG_DARK)
     add_copyright(b, p)
-    b.dot_title(p, f"{DOT} {s.get('name', '')} {DOT} {s.get('time', '')}", 0.214, 0.160, 6.0, 0.5)
+    b.dot_title(p, f"{DOT} {s.get('name', '')}" + (f" {DOT} {s['time']}" if s.get("time") else ""), 0.214, 0.160, 6.0, 0.5)
     y = 0.85
     for lab, body in s.get("blocks", []):
         # высота блока по числу строк (~30 знаков в строке колонки 3.15″ при 11pt, проверено рендером),
@@ -806,6 +809,13 @@ def build_plan(manifest_path, out_dir):
     with open(manifest_path, encoding="utf-8") as f:
         m = yaml.safe_load(f)
     os.makedirs(out_dir, exist_ok=True)
+    # a rebuild must not leave stale media, batches or media_map from the old plan
+    import glob
+    import shutil
+    shutil.rmtree(os.path.join(out_dir, "media"), ignore_errors=True)
+    for old in glob.glob(os.path.join(out_dir, "batch_*.json")) + [os.path.join(out_dir, "media_map.json")]:
+        if os.path.exists(old):
+            os.remove(old)
     BAKER = LocalMedia(out_dir, base_dir=os.path.dirname(manifest_path))
 
     b = Builder()
@@ -815,7 +825,10 @@ def build_plan(manifest_path, out_dir):
         fn = DISPATCH.get(a)
         if fn is None:
             raise SystemExit(f"unknown archetype: {a} (see MANIFEST.md)")
-        fn(b, sl, page_no)
+        try:
+            fn(b, sl, page_no)
+        except (ValueError, KeyError, IndexError) as e:
+            raise SystemExit(f"слайд {page_no} ({a}): {e}") from e
         page_no += 1
 
     plan = {"title": m["title"], "slides": len(m["slides"]),

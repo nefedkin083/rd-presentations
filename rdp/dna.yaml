@@ -2,9 +2,8 @@
 # Единый источник правды: из него (1) рендерится страница-методичка и
 # (2) агент-сборщик собирает новые деки из сырого контента.
 #
-# Числа извлечены из ДИЗАЙНЕРСКОГО ШАБЛОНА (reference/designers_template.pdf,
-# 22 слайда, канон RD). Прежний эталон — VTB-дек — был единичной ручной сборкой;
-# шаблон приоритетнее. Извлечение: PDF 1920×1080pt → холст 10×5.625in
+# Числа извлечены из дизайнерского шаблона студии (22 слайда, канон RD;
+# сам шаблон — внутренний материал и в репо не лежит). Извлечение: PDF 1920×1080pt → холст 10×5.625in
 # (U = 192pt/in; размер шрифта real_pt = pdf_pt × 0.375).
 # Единицы: дюймы для читаемости + EMU (Google Slides native). 1in = 914400 EMU.
 #
@@ -15,8 +14,6 @@ meta:
   version: 2
   updated: 2026-07-10
   reference_deck: "RD designers template (canonical)"
-  reference_pdf: "reference/designers_template.pdf"
-  legacy_reference: "VTB app video proposal — единичная ручная сборка, не канон"
   platform: google-slides
 
 canvas:
