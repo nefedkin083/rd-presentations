@@ -109,6 +109,26 @@ class LocalMedia:
             return self.cache[key]
         return self._store(key, bake_bytes(read_bytes(src, self.base_dir), w_in, h_in, radius_in), src)
 
+    def shape(self, kind, w_in, h_in, fill_hex):
+        """Solid capsule / circle baked to PNG at PX_PER_IN with the same
+        supersampled mask as image corners: a smooth edge at any zoom. Vector
+        ELLIPSE + RECTANGLE pieces render with a stepped, seamed edge in Slides."""
+        key = ("shape", kind, round(w_in, 3), round(h_in, 3), fill_hex)
+        if key in self.cache:
+            return self.cache[key]
+        tw = max(1, int(round(w_in * PX_PER_IN)))
+        th = max(1, int(round(h_in * PX_PER_IN)))
+        ss = SUPERSAMPLE
+        big = Image.new("L", (tw * ss, th * ss), 0)
+        r = th * ss / 2 if kind == "capsule" else min(tw, th) * ss / 2
+        ImageDraw.Draw(big).rounded_rectangle([0, 0, tw * ss - 1, th * ss - 1], radius=r, fill=255)
+        h = fill_hex.lstrip("#")
+        img = Image.new("RGBA", (tw, th), tuple(int(h[i:i + 2], 16) for i in (0, 2, 4)) + (255,))
+        img.putalpha(big.resize((tw, th), Image.LANCZOS))
+        buf = io.BytesIO()
+        img.save(buf, format="PNG", optimize=True)
+        return self._store(key, buf.getvalue(), f"{kind}:{fill_hex}")
+
     def raw(self, src):
         """Logos and other pictures that go in as they are (still re-encoded,
         so Google gets one predictable file per picture)."""
