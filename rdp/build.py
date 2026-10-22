@@ -217,14 +217,10 @@ class Builder:
         return oid
 
     def capsule(self, page, x, y, w, h, fill_hex):
-        """Perfect stadium/capsule (corner radius = h/2) as a filled rect + two
-        end circles of the same colour. The Slides API can't set ROUND_RECTANGLE
-        radius, so solid pills are drawn from primitives to match the template's
-        strong rounding."""
-        r = h / 2
-        self.rect(page, x + r, y, max(0.0, w - h), h, fill_hex)
-        self.ellipse(page, x, y, h, fill_hex)
-        self.ellipse(page, x + w - h, y, h, fill_hex)
+        """Perfect stadium/capsule (corner radius = h/2), baked to a 400 ppi PNG
+        with a supersampled mask (RULES §5): vector rect + end circles render
+        with a stepped seam in Slides."""
+        self.image(page, BAKER.shape("capsule", w, h, fill_hex), x, y, w, h)
 
     def circle_outline(self, page, cx, cy, d, stroke_hex, weight_emu=9525):
         """Unfilled circle with a thin stroke (venn set) — (cx, cy) is center."""
@@ -244,7 +240,7 @@ def add_page_number(b, page, page_no):
     pn = DNA["chrome"]["page_number"]
     d = pn["circle_diameter_in"]
     cx, cy = pn["center_in"]["x"], pn["center_in"]["y"]
-    b.ellipse(page, cx - d / 2, cy - d / 2, d, "#ffffff")
+    b.image(page, BAKER.shape("circle", d, d, "#ffffff"), cx - d / 2, cy - d / 2, d, d)
     # box wider than the circle so two-digit numbers don't wrap inside it
     b.textbox(page, str(page_no), cx - 1.5 * d, cy - d / 2, 3 * d, d,
               pn["size_pt"], pn["color"], align="CENTER", valign="MIDDLE")
