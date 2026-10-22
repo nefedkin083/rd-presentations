@@ -123,9 +123,12 @@ class Builder:
         return oid
 
     def dot_title(self, page, text, x, y, w, h):
-        """Header with a ● marker. When a name precedes the first ●, the text
-        after it is the muted (grey) descriptor; a leading ● keeps its text
-        white (running header). The ● renders at the header dot size."""
+        """Slide header, one format for every archetype: «Название ● раздел».
+        Name and ● are white, everything after the first ● is the grey
+        descriptor. A leading ● is never rendered (RULES §3)."""
+        text = text.strip()
+        while text.startswith(DOT):
+            text = text[len(DOT):].strip()
         oid = self.textbox(page, text, x, y, w, h,
                            TS["title"]["size_pt"], COL["title"], weight=500)
         first = text.find(DOT)
@@ -268,9 +271,10 @@ def add_chrome(b, page, page_no):
 
 
 def add_title(b, page, text):
+    """Every content header goes through dot_title, so «Название ● раздел»
+    renders the same on all archetypes (descriptor after ● in grey)."""
     box = DNA["chrome"]["title"]["box_in"]
-    b.textbox(page, text, box["x"], box["y"], box["w"], box["h"],
-              TS["title"]["size_pt"], COL["title"], weight=500)
+    b.dot_title(page, text, box["x"], box["y"], box["w"], box["h"])
 
 
 # ---- archetype builders ----------------------------------------------------
@@ -409,7 +413,7 @@ def build_case_study(b, s, page_no):
     p = b.slide()
     b.set_bg(p, BG_DARK)
     add_copyright(b, p)
-    b.dot_title(p, f"{DOT} {s.get('name','')}", 0.214, 0.160, 5.0, 0.5)
+    b.dot_title(p, s.get('name', ''), 0.214, 0.160, 5.0, 0.5)
     imgs = s.get("images", [])
     if imgs:
         # native aspect, per-set composition in the left zone (METHODOLOGY: аспект и композиция)
@@ -703,7 +707,7 @@ def build_setup(b, s, page_no):
     p = b.slide()
     b.set_bg(p, BG_DARK)
     add_copyright(b, p)
-    b.dot_title(p, f"{DOT} {s.get('name', '')}", 0.214, 0.160, 5.0, 0.5)
+    b.dot_title(p, s.get('name', ''), 0.214, 0.160, 5.0, 0.5)
 
     if s.get("body"):
         b.textbox(p, s["body"], 5.58, 0.85, 4.20, 2.20,
@@ -734,7 +738,7 @@ def build_storyboard(b, s, page_no):
     p = b.slide()
     b.set_bg(p, BG_DARK)
     add_copyright(b, p)
-    b.dot_title(p, f"{DOT} {s.get('name', '')}" + (f" {DOT} {s['time']}" if s.get("time") else ""), 0.214, 0.160, 6.0, 0.5)
+    b.dot_title(p, s.get('name', '') + (f" {DOT} {s['time']}" if s.get("time") else ""), 0.214, 0.160, 6.0, 0.5)
     y = 0.85
     for lab, body in s.get("blocks", []):
         # высота блока по числу строк (~30 знаков в строке колонки 3.15″ при 11pt, проверено рендером),
