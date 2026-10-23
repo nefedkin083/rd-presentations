@@ -61,7 +61,7 @@ chrome:
     color: "#ffffff"
     text: "© Copyright 2026 radugadesign All rights reserved. All original content part of this document may not, in any case, be used, reproduced..."
     orientation: vertical   # читается сверху вниз
-    anchor_in: { x: 9.970, y: 0.097 }   # правый край, верх
+    anchor_in: { x: 10.041, y: 0.097 }  # правый край, верх; сдвинут правее по правке Ивана 23.10 — не липнет к картинкам
 
 type_scale:
   title:        { font: "Inter", weight: medium,  size_pt: 20.2, color: "#ffffff" }  # заголовок + statement
