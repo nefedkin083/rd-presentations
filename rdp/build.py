@@ -11,6 +11,7 @@ Honest limits: the Slides API cannot round corners, so rounding is baked into
 the PNG; GIFs are flattened to their first frame; real video stays square.
 """
 import re
+import datetime
 import os
 import zlib
 import random
@@ -202,10 +203,16 @@ class Builder:
             "elementProperties": {"pageObjectId": page,
                 "size": {"width": {"magnitude": emu(length), "unit": "EMU"},
                          "height": {"magnitude": emu(thick), "unit": "EMU"}},
-                "transform": {"scaleX": 0, "shearX": -1, "shearY": 1, "scaleY": 0,
-                              "translateX": emu(right_x), "translateY": emu(top_y), "unit": "EMU"}}}})
+                # поворот −90°: строка читается снизу вверх, начало «©» внизу;
+                # бокс занимает x ∈ [right_x − thick, right_x], y ∈ [top_y, top_y + length]
+                "transform": {"scaleX": 0, "shearX": 1, "shearY": -1, "scaleY": 0,
+                              "translateX": emu(right_x - thick), "translateY": emu(top_y + length),
+                              "unit": "EMU"}}}})
         self.reqs.append({"insertText": {"objectId": oid, "insertionIndex": 0, "text": text}})
         self._style_range(oid, size, color, 300)
+        # после поворота низ бокса смотрит вправо: прижимаем строку к правому краю слайда
+        self.reqs.append({"updateShapeProperties": {"objectId": oid,
+            "shapeProperties": {"contentAlignment": "BOTTOM"}, "fields": "contentAlignment"}})
         return oid
 
     def ellipse(self, page, x, y, d, fill_hex):
@@ -266,7 +273,7 @@ def add_copyright(b, page):
     behind everything. Font auto-sized so the single line fills the full
     slide height without wrapping."""
     cp = DNA["chrome"]["copyright"]
-    text = cp["text"]
+    text = cp["text"].format(year=datetime.date.today().year)
     margin = 0.03
     length = DNA["canvas"]["height_in"] - 2 * margin   # span the slide height
     # Calibrated Inter width for this vertical legal line (in per pt per char,
