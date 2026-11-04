@@ -197,7 +197,7 @@ class Builder:
             "pageProperties": {"pageBackgroundFill": {"solidFill": {"color": {"rgbColor": hex_rgb(fill_hex)}}}},
             "fields": "pageBackgroundFill.solidFill.color"}})
 
-    def vtext(self, page, text, right_x, top_y, length, thick, size, color):
+    def vtext(self, page, text, right_x, top_y, length, thick, size, color, align=None):
         oid = self._id("vt")
         self.reqs.append({"createShape": {"objectId": oid, "shapeType": "TEXT_BOX",
             "elementProperties": {"pageObjectId": page,
@@ -213,6 +213,9 @@ class Builder:
         # после поворота низ бокса смотрит вправо: прижимаем строку к правому краю слайда
         self.reqs.append({"updateShapeProperties": {"objectId": oid,
             "shapeProperties": {"contentAlignment": "BOTTOM"}, "fields": "contentAlignment"}})
+        if align:
+            self.reqs.append({"updateParagraphStyle": {"objectId": oid, "style": {"alignment": align},
+                "textRange": {"type": "ALL"}, "fields": "alignment"}})
         return oid
 
     def ellipse(self, page, x, y, d, fill_hex):
@@ -274,13 +277,17 @@ def add_copyright(b, page):
     slide height without wrapping."""
     cp = DNA["chrome"]["copyright"]
     text = cp["text"].format(year=datetime.date.today().year)
-    margin = 0.03
-    length = DNA["canvas"]["height_in"] - 2 * margin   # span the slide height
-    # Calibrated Inter width for this vertical legal line (in per pt per char,
-    # measured from renders). Size the font so the single line fills the slide
-    # height edge-to-edge without wrapping (tiny slack to avoid a 2nd line).
-    size = 0.985 * length / (len(text) * 0.00708)
-    b.vtext(page, text, cp["anchor_in"]["x"], margin, length, 0.2, size, COL["copyright"])
+    H = DNA["canvas"]["height_in"]
+    edge = 0.035                      # строка от края до края листа, как в шаблоне
+    target = H - 2 * edge
+    # Ширина Inter Light для этой строки, дюймов на пункт на символ — замер по
+    # рендеру Slides (4.957″ при 4.39 pt на 176 символов).
+    size = target / (len(text) * 0.006403)
+    # Бокс длиннее листа на внутренние поля Slides (~0.1″ с каждой стороны)
+    # и запас от переноса; строка центрируется, бокс центрирован по высоте листа.
+    box = target + 0.35
+    b.vtext(page, text, cp["anchor_in"]["x"], (H - box) / 2, box, 0.2, size,
+            COL["copyright"], align="CENTER")
 
 
 def add_chrome(b, page, page_no):
