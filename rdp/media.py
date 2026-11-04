@@ -78,6 +78,22 @@ def bake_bytes(raw, w_in, h_in, radius_in):
     return out.getvalue()
 
 
+# Овал номера страницы — контур из канона дизайнера (Keynote → PDF, 41×50 pt):
+# 12 кубических сегментов в долях бокса. Это не эллипс: бока прямее.
+PAGE_OVAL = [((0.5, 0.0), (0.5583, 0.0), (0.6162, 0.0084), (0.671, 0.0247)), ((0.671, 0.0247), (0.8099, 0.0662), (0.9193, 0.1559), (0.9698, 0.2698)), ((0.9698, 0.2698), (0.994, 0.3152), (1.0, 0.4242), (1.0, 0.5)), ((1.0, 0.5), (1.0, 0.5758), (0.994, 0.6848), (0.9698, 0.7302)), ((0.9698, 0.7302), (0.9193, 0.8441), (0.8099, 0.9338), (0.671, 0.9753)), ((0.671, 0.9753), (0.6162, 0.9916), (0.5583, 1.0), (0.5, 1.0)), ((0.5, 1.0), (0.4417, 1.0), (0.3838, 0.9916), (0.329, 0.9753)), ((0.329, 0.9753), (0.1901, 0.9338), (0.0807, 0.8441), (0.0302, 0.7302)), ((0.0302, 0.7302), (0.006, 0.6848), (0.0, 0.5758), (0.0, 0.5)), ((0.0, 0.5), (0.0, 0.4242), (0.006, 0.3152), (0.0302, 0.2698)), ((0.0302, 0.2698), (0.0807, 0.1559), (0.1901, 0.0662), (0.329, 0.0247)), ((0.329, 0.0247), (0.3838, 0.0084), (0.4417, 0.0), (0.5, 0.0))]
+
+
+def _oval_polygon(w, h, steps=24):
+    pts = []
+    for p0, p1, p2, p3 in PAGE_OVAL:
+        for i in range(steps):
+            t = i / steps
+            a, b, c, d = (1 - t) ** 3, 3 * (1 - t) ** 2 * t, 3 * (1 - t) * t * t, t ** 3
+            pts.append(((a * p0[0] + b * p1[0] + c * p2[0] + d * p3[0]) * (w - 1),
+                        (a * p0[1] + b * p1[1] + c * p2[1] + d * p3[1]) * (h - 1)))
+    return pts
+
+
 class LocalMedia:
     """Collects baked media into ``<plan>/media`` and hands out placeholders."""
 
@@ -120,8 +136,11 @@ class LocalMedia:
         th = max(1, int(round(h_in * PX_PER_IN)))
         ss = SUPERSAMPLE
         big = Image.new("L", (tw * ss, th * ss), 0)
-        r = th * ss / 2 if kind == "capsule" else min(tw, th) * ss / 2
-        ImageDraw.Draw(big).rounded_rectangle([0, 0, tw * ss - 1, th * ss - 1], radius=r, fill=255)
+        if kind == "oval":
+            ImageDraw.Draw(big).polygon(_oval_polygon(tw * ss, th * ss), fill=255)
+        else:
+            r = th * ss / 2 if kind == "capsule" else min(tw, th) * ss / 2
+            ImageDraw.Draw(big).rounded_rectangle([0, 0, tw * ss - 1, th * ss - 1], radius=r, fill=255)
         h = fill_hex.lstrip("#")
         img = Image.new("RGBA", (tw, th), tuple(int(h[i:i + 2], 16) for i in (0, 2, 4)) + (255,))
         img.putalpha(big.resize((tw, th), Image.LANCZOS))
