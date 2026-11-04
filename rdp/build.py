@@ -10,6 +10,7 @@ build is reproducible and testable without keys.
 Honest limits: the Slides API cannot round corners, so rounding is baked into
 the PNG; GIFs are flattened to their first frame; real video stays square.
 """
+import re
 import os
 import zlib
 import random
@@ -55,6 +56,19 @@ def emu(inch):
 def hex_rgb(h):
     h = h.lstrip("#")
     return {"red": int(h[0:2], 16) / 255, "green": int(h[2:4], 16) / 255, "blue": int(h[4:6], 16) / 255}
+
+
+# Висячие предлоги и союзы: короткое слово приклеивается к следующему
+# неразрывным пробелом, чтобы не оставаться в конце строки. Длина текста
+# не меняется (пробел → nbsp), поэтому диапазоны стилей не сдвигаются.
+SHORT_WORDS = ("в", "во", "к", "ко", "с", "со", "у", "о", "об", "а", "и", "но", "да",
+               "на", "по", "за", "из", "от", "до", "не", "ни", "без", "для", "при",
+               "про", "над", "под", "что", "как", "или")
+_NBSP_RE = re.compile(r"(?<![\w-])(" + "|".join(SHORT_WORDS) + r") (?=\S)", re.IGNORECASE)
+
+
+def nbsp(text):
+    return _NBSP_RE.sub(lambda m: m.group(1) + "\u00a0", text)
 
 
 def text_w(text, size_pt):
@@ -105,7 +119,7 @@ class Builder:
         oid = self._id("tb")
         self.reqs.append({"createShape": {"objectId": oid, "shapeType": "TEXT_BOX",
             "elementProperties": self._elem(oid, page, x, y, w, h)}})
-        self.reqs.append({"insertText": {"objectId": oid, "insertionIndex": 0, "text": text}})
+        self.reqs.append({"insertText": {"objectId": oid, "insertionIndex": 0, "text": nbsp(text)}})
         self._style_range(oid, size, color, weight)
         if align != "START" or line_spacing is not None:
             style, fields = {}, []
