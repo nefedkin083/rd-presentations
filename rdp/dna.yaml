@@ -51,8 +51,8 @@ chrome:
     font: "Inter"
     size_pt: 8.2
     color: "#222222"        # тёмная цифра в белом кружке
-    marker: white-circle
-    circle_diameter_in: 0.30
+    marker: white-oval        # вертикальный овал по канону дизайнера (Keynote), не круг
+    oval_in: { w: 0.2135, h: 0.2604 }   # 41×50 pt на листе 1920×1080
     center_in: { x: 5.0, y: 5.29 }
   copyright:
     font: "Inter"

@@ -262,11 +262,11 @@ class Builder:
 # ---- chrome ----------------------------------------------------------------
 def add_page_number(b, page, page_no):
     pn = DNA["chrome"]["page_number"]
-    d = pn["circle_diameter_in"]
+    w, h = pn["oval_in"]["w"], pn["oval_in"]["h"]
     cx, cy = pn["center_in"]["x"], pn["center_in"]["y"]
-    b.image(page, BAKER.shape("circle", d, d, "#ffffff"), cx - d / 2, cy - d / 2, d, d)
-    # box wider than the circle so two-digit numbers don't wrap inside it
-    b.textbox(page, str(page_no), cx - 1.5 * d, cy - d / 2, 3 * d, d,
+    b.image(page, BAKER.shape("oval", w, h, "#ffffff"), cx - w / 2, cy - h / 2, w, h)
+    # box wider than the oval so two-digit numbers don't wrap inside it
+    b.textbox(page, str(page_no), cx - 1.5 * h, cy - h / 2, 3 * h, h,
               pn["size_pt"], pn["color"], align="CENTER", valign="MIDDLE")
 
 
