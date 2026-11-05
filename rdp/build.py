@@ -120,6 +120,10 @@ class Builder:
         oid = self._id("tb")
         self.reqs.append({"createShape": {"objectId": oid, "shapeType": "TEXT_BOX",
             "elementProperties": self._elem(oid, page, x, y, w, h)}})
+        if not text:
+            # пустое поле (карточка без подписи, шаг без текста): стиль на пустой
+            # бокс Slides отвергает и роняет всю сборку — оставляем пустой бокс
+            return oid
         self.reqs.append({"insertText": {"objectId": oid, "insertionIndex": 0, "text": nbsp(text)}})
         self._style_range(oid, size, color, weight)
         if align != "START" or line_spacing is not None:
