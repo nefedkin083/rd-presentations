@@ -73,8 +73,26 @@ def nbsp(text):
 
 
 def text_w(text, size_pt):
-    """Rough Inter text width in inches (for pill sizing)."""
-    return len(text) * size_pt * 0.0082
+    """Inter Regular text width in inches, from per-class advance widths in em
+    (measured on Inter-Regular): digits are narrower than an average letter, so a
+    flat per-char guess made date pills visibly too wide."""
+    em = 0.0
+    for c in text:
+        if c.isdigit():
+            em += 0.407 if c == "1" else 0.615
+        elif c in ".,:;'’":
+            em += 0.288
+        elif c == "-":
+            em += 0.46
+        elif c == " ":
+            em += 0.281
+        elif c == "@":
+            em += 0.966
+        elif c.isupper():
+            em += 0.681
+        else:
+            em += 0.54
+    return em * size_pt / 72
 
 
 class Builder:
@@ -171,7 +189,7 @@ class Builder:
         pills fall back to ROUND_RECTANGLE (a clean capsule outline isn't
         expressible via the Slides API without seam artifacts)."""
         size = TS["chip"]["size_pt"]
-        w = max(0.7, text_w(text, size) + 0.34)
+        w = max(0.5, text_w(text, size) + 0.28)  # поле ≈ ½ высоты с каждой стороны
         h = 0.26
         if fill_hex is not None or solid:
             fill = fill_hex if fill_hex is not None else COL["chip_fill"]
@@ -673,7 +691,7 @@ def build_venn(b, s, page_no):
     for i, c in enumerate(circles[:len(centers)]):
         cx = centers[i]
         label = c.get("label", f"{i + 1} step")
-        pw = max(0.7, text_w(label, TS["chip"]["size_pt"]) + 0.34)
+        pw = max(0.5, text_w(label, TS["chip"]["size_pt"]) + 0.28)
         b.pill(p, label, cx - pw / 2, line_y + V["pill_dy_in"],
                fill_hex=COL["diagram_pill_fill"], text_hex=COL["diagram_pill_text"])
         bw = d - 0.30
