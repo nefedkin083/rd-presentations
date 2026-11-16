@@ -36,6 +36,7 @@ DINGBATS = "➊➋➌➍➎➏"  # ➊➋➌➍➎➏
 
 BAKER = None
 RADIUS_IN = DNA["media"]["corner_radius_in"]
+TEXT_INSET_IN = 0.094  # внутреннее поле текстового бокса Slides слева
 
 
 def rounded(url, w, h):
@@ -139,6 +140,11 @@ class Builder:
     def textbox(self, page, text, x, y, w, h, size, color, weight=400,
                 align="START", valign="TOP", line_spacing=None):
         oid = self._id("tb")
+        if align == "START":
+            # у текстового бокса Slides внутренний отступ ~0.094″: сдвигаем бокс
+            # влево, чтобы первая буква стояла ровно на линии x — вместе
+            # с картинками и остальными элементами (одна левая линия на слайде)
+            x, w = x - TEXT_INSET_IN, w + TEXT_INSET_IN
         self.reqs.append({"createShape": {"objectId": oid, "shapeType": "TEXT_BOX",
             "elementProperties": self._elem(oid, page, x, y, w, h)}})
         if not text:
