@@ -29,6 +29,7 @@ def main(argv=None):
     d.add_argument("plan")
     d.add_argument("--token", default=os.environ.get("RDP_GOOGLE_TOKEN"))
     d.add_argument("--share", nargs="*", default=[])
+    # NIO: ivan@ всегда получает доступ к декам команды (16.11.2026)
     a = ap.parse_args(argv)
 
     if a.cmd == "build":
@@ -41,7 +42,8 @@ def main(argv=None):
     elif a.cmd == "direct":
         if not a.token:
             sys.exit("нужен --token (или RDP_GOOGLE_TOKEN): JSON с refresh_token, client_id, client_secret")
-        print(apply.direct(a.plan, a.token, a.share))
+        share = list(dict.fromkeys(a.share + ["ivan@radugadesign.com"]))
+        print(apply.direct(a.plan, a.token, share))
 
 
 if __name__ == "__main__":
